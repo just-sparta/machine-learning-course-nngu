@@ -1,23 +1,24 @@
 class Polynomial(object):
 
-    def __init__(self, coeffs):
+    def __init__(self, *coeffs):
 
         self.coefficients = []
-        if isinstance(coeffs, list):
+        if isinstance(coeffs[0], (list, )):
             if not coeffs:
                 self.coefficients = [0]
             else:
-                for el in coeffs:
+                for el in coeffs[0]:
                     if not isinstance(el, (int, float)):
-                        raise ValueError('Incorrect polynomial parameters', el, coeffs)
+                        raise ValueError('Incorrect polynomial parameters: Please enter int or float')
                 else:
-                    self.coefficients = coeffs
-        elif isinstance(coeffs, Polynomial):
-            self.coefficients = coeffs.coefficients[:]
-        elif isinstance(coeffs, (int, float)):
-            self.coefficients.append(coeffs)
+                    self.coefficients = coeffs[0]
+        elif isinstance(coeffs[0], (Polynomial, )):
+            self.coefficients = [c for c in coeffs[0].coefficients]
         else:
-            raise ValueError('Incorrect polynomial parameters', coeffs)
+            for el in coeffs:
+                if not isinstance(el, (int, float)):
+                    raise ValueError('Incorrect polynomial parameters: Please enter int or float')
+            self.coefficients = [c for c in coeffs]
 
         if self.coefficients:
             while len(self.coefficients) > 1 and self.coefficients[0] == 0:
@@ -27,10 +28,6 @@ class Polynomial(object):
         return len(self.coefficients) == 0
 
     def __repr__(self):
-        """
-        method to return the canonical string representation
-        of a polynomial.
-        """
         return "Polynomial" + str(self.coefficients)
 
     def __call__(self, x):
@@ -76,7 +73,7 @@ class Polynomial(object):
         else:
             raise TypeError('Adding: Incorrect functional arguments')
 
-        return Polynomial(res)
+        return Polynomial(*res)
 
     def __radd__(self, other):
         return self.__add__(other)
@@ -99,7 +96,7 @@ class Polynomial(object):
         for i in range(len(self.coefficients) - 1):
             derived_coeffs.append(self.coefficients[i] * exponent)
             exponent -= 1
-        return Polynomial(derived_coeffs)
+        return Polynomial(*derived_coeffs)
 
     def __mul__(self, other):
         if isinstance(other, (int, float)):
@@ -111,7 +108,7 @@ class Polynomial(object):
                     res[self_pow + arg_pow] += self_coeff * arg_coeff
         else:
             raise TypeError('Multiplication: Incorrect functional arguments')
-        return Polynomial(res)
+        return Polynomial(*res)
 
     def __rmul__(self, other):
         return self.__mul__(other)
@@ -131,7 +128,7 @@ class Polynomial(object):
         else:
             res += " + " + str(self.coefficients[-1])
 
-        return res
+        return res.replace('^1', '').replace('1x', 'x')
 
 
 def main():
