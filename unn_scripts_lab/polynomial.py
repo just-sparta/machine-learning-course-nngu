@@ -4,7 +4,7 @@ class Polynomial(object):
 
         self.coefficients = []
         if isinstance(coeffs[0], (list, )):
-            if not coeffs:
+            if not coeffs or coeffs == ([], ):
                 self.coefficients = [0]
             else:
                 for el in coeffs[0]:
@@ -15,6 +15,9 @@ class Polynomial(object):
         elif isinstance(coeffs[0], (Polynomial, )):
             self.coefficients = [c for c in coeffs[0].coefficients]
         else:
+            if isinstance(coeffs[0], tuple):
+                self.coefficients = list(coeffs[0])
+                return
             for el in coeffs:
                 if not isinstance(el, (int, float)):
                     raise ValueError('Incorrect polynomial parameters: Please enter int or float')
@@ -115,20 +118,26 @@ class Polynomial(object):
 
     def __str__(self):
         res = ""
+        try:
+            self.coefficients[0]
+        except IndexError:
+            return str(0)
         res += str(self.coefficients[0]) + "x^" + str(self.degree)
         for i in range(1, len(self.coefficients) - 1):
             coeff = self.coefficients[i]
             if coeff < 0:
-                res += " - " + str(-coeff) + "x^" + str(self.degree - i)
+                res += "-" + str(-coeff) + "x^" + str(self.degree - i)
             else:
-                res += " + " + str(coeff) + "x^" + str(self.degree - i)
+                res += "+" + str(coeff) + "x^" + str(self.degree - i)
 
         if self.coefficients[-1] < 0:
-            res += " - " + str(-self.coefficients[-1])
+            res += "-" + str(-self.coefficients[-1])
         else:
-            res += " + " + str(self.coefficients[-1])
+            res += "+" + str(self.coefficients[-1])
 
-        return res.replace('^1', '').replace('1x', 'x')
+        # for normal output
+        return res.replace('^1', '').replace('1x', 'x').replace('-x^0', '')\
+            .replace('x^0', '').replace('0+0', '0')
 
 
 def main():
