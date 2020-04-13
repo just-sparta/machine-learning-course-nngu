@@ -125,6 +125,31 @@ class TestPolynomial(unittest.TestCase):
         p2 = p1.__str__()
         self.assertEqual('x^4 + x^3 + x + 1', p2)
 
+    def test_string_zeros(self):
+        p1 = polynomial.Polynomial([1, 0, 0, 1, 1])
+        p2 = p1.__str__()
+        self.assertEqual('x^4 + x + 1', p2)
+
+    def test_string_zeros_2(self):
+        p1 = polynomial.Polynomial([1, 1, 0, 0, 0])
+        p2 = p1.__str__()
+        self.assertEqual('x^4 + x^3', p2)
+
+    def test_string_zeros_3(self):
+        p1 = polynomial.Polynomial([1, -1, 0, -1, -1])
+        p2 = p1.__str__()
+        self.assertEqual('x^4 - x^3 - x - 1', p2)
+
+    def test_string_zeros_4(self):
+        p1 = polynomial.Polynomial([0, -1, 0, -1, 0])
+        p2 = p1.__str__()
+        self.assertEqual('-x^3 - x', p2)
+
+    def test_string_zeros_5(self):
+        p1 = polynomial.Polynomial([0, 0, 0, 0, 0])
+        p2 = p1.__str__()
+        self.assertEqual('0', p2)
+
     def test_string_tuple(self):
         p1 = polynomial.Polynomial(1, 1, 1, 1, 1)
         p2 = p1.__str__()
