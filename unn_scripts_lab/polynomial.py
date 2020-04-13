@@ -1,53 +1,53 @@
 class Polynomial(object):
 
-    def __init__(self, *coeffs):
+    def __init__(self, *coefficients):
 
-        self.coefficients = []
-        if isinstance(coeffs[0], (list, )):
-            if not coeffs or coeffs == ([], ):
-                self.coefficients = [0]
+        self.coeffs = []
+        if isinstance(coefficients[0], (list, )):
+            if not coefficients or coefficients == ([], ):
+                self.coeffs = [0]
             else:
-                for el in coeffs[0]:
+                for el in coefficients[0]:
                     if not isinstance(el, (int, float)):
                         raise ValueError('Incorrect polynomial parameters: Please enter int or float')
                 else:
-                    self.coefficients = coeffs[0]
-        elif isinstance(coeffs[0], (Polynomial, )):
-            self.coefficients = [c for c in coeffs[0].coefficients]
+                    self.coeffs = coefficients[0]
+        elif isinstance(coefficients[0], (Polynomial, )):
+            self.coeffs = [c for c in coefficients[0].coeffs]
         else:
-            if isinstance(coeffs[0], tuple):
-                self.coefficients = list(coeffs[0])
+            if isinstance(coefficients[0], tuple):
+                self.coeffs = list(coefficients[0])
                 return
-            for el in coeffs:
+            for el in coefficients:
                 if not isinstance(el, (int, float)):
                     raise ValueError('Incorrect polynomial parameters: Please enter int or float')
-            self.coefficients = [c for c in coeffs]
+            self.coeffs = [c for c in coefficients]
 
-        if self.coefficients:
-            while len(self.coefficients) > 1 and self.coefficients[0] == 0:
-                self.coefficients.pop(0)
+        if self.coeffs:
+            while len(self.coeffs) > 1 and self.coeffs[0] == 0:
+                self.coeffs.pop(0)
 
     def is_empty(self):
-        return len(self.coefficients) == 0
+        return len(self.coeffs) == 0
 
     def __repr__(self):
-        return "Polynomial" + str(self.coefficients)
+        return f"Polynomial({self.coeffs})"
 
     def __call__(self, x):
         res = 0
-        for coeff in self.coefficients:
+        for coeff in self.coeffs:
             res = res * x + coeff
         return res
 
     @property
     def degree(self):
-        return len(self.coefficients) - 1
+        return len(self.coeffs) - 1
 
     def __eq__(self, other):
         if isinstance(other, (int, float)) and self.degree == 0:
-            return self.coefficients[0] == other
+            return self.coeffs[0] == other
         elif isinstance(other, Polynomial):
-            return self.coefficients == other.coefficients
+            return self.coeffs == other.coeffs
         elif isinstance(other, str):
             return str(self) == other
         else:
@@ -59,20 +59,20 @@ class Polynomial(object):
     def __add__(self, other):
         res = []
         if isinstance(other, (int, float)):
-            if self.coefficients:
-                res = self.coefficients[:]
+            if self.coeffs:
+                res = self.coeffs[:]
                 res[-1] += other
             else:
                 res = other
         elif isinstance(other, Polynomial):
             if self.degree > other.degree:
-                res = self.coefficients[:]
+                res = self.coeffs[:]
                 for i in range(0, other.degree + 1, 1):
-                    res[self.degree - other.degree + i] += other.coefficients[i]
+                    res[self.degree - other.degree + i] += other.coeffs[i]
             else:
-                res = other.coefficients[:]
+                res = other.coeffs[:]
                 for i in range(0, self.degree + 1, 1):
-                    res[other.degree - self.degree + i] += self.coefficients[i]
+                    res[other.degree - self.degree + i] += self.coeffs[i]
         else:
             raise TypeError('Adding: Incorrect functional arguments')
 
@@ -82,7 +82,7 @@ class Polynomial(object):
         return self.__add__(other)
 
     def __neg__(self):
-        return Polynomial([-coeff for coeff in self.coefficients])
+        return Polynomial([-coeff for coeff in self.coeffs])
 
     def __sub__(self, other):
         if isinstance(other, (int, float, Polynomial)):
@@ -95,19 +95,19 @@ class Polynomial(object):
 
     def derivative(self):
         derived_coeffs = []
-        exponent = len(self.coefficients) - 1
-        for i in range(len(self.coefficients) - 1):
-            derived_coeffs.append(self.coefficients[i] * exponent)
+        exponent = len(self.coeffs) - 1
+        for i in range(len(self.coeffs) - 1):
+            derived_coeffs.append(self.coeffs[i] * exponent)
             exponent -= 1
         return Polynomial(*derived_coeffs)
 
     def __mul__(self, other):
         if isinstance(other, (int, float)):
-            return Polynomial([coeff * other for coeff in self.coefficients])
+            return Polynomial([coeff * other for coeff in self.coeffs])
         elif isinstance(other, Polynomial):
             res = [0] * (self.degree + other.degree + 1)
-            for self_pow, self_coeff in enumerate(self.coefficients):
-                for arg_pow, arg_coeff in enumerate(other.coefficients):
+            for self_pow, self_coeff in enumerate(self.coeffs):
+                for arg_pow, arg_coeff in enumerate(other.coeffs):
                     res[self_pow + arg_pow] += self_coeff * arg_coeff
         else:
             raise TypeError('Multiplication: Incorrect functional arguments')
@@ -118,26 +118,36 @@ class Polynomial(object):
 
     def __str__(self):
         res = ""
-        try:
-            self.coefficients[0]
-        except IndexError:
-            return str(0)
-        res += str(self.coefficients[0]) + "x^" + str(self.degree)
-        for i in range(1, len(self.coefficients) - 1):
-            coeff = self.coefficients[i]
-            if coeff < 0:
-                res += "-" + str(-coeff) + "x^" + str(self.degree - i)
-            else:
-                res += "+" + str(coeff) + "x^" + str(self.degree - i)
-
-        if self.coefficients[-1] < 0:
-            res += "-" + str(-self.coefficients[-1])
+        if self.degree == 0:
+            return str(self.coeffs[0])
         else:
-            res += "+" + str(self.coefficients[-1])
+            first_sign = f"{'-' if self.coeffs[0] < 0 else ''}"
+            no_one = f"{'' if abs(self.coeffs[0]) == 1 else abs(self.coeffs[0])}"
+            res += first_sign + no_one + "x" + f"{'' if self.degree == 1 else '^' + str(self.degree)}"
 
-        # for normal output
-        return res.replace('^1', '').replace('1x', 'x').replace('-x^0', '')\
-            .replace('x^0', '').replace('0+0', '0')
+            for i in range(1, len(self.coeffs) - 1):
+                coeff = self.coeffs[i]
+                degree = self.degree - i
+
+                if coeff == 0:
+                    continue
+
+                if coeff < 0:
+                    res += " - " + f"{'' if abs(coeff) == 1 else abs(coeff)}" + \
+                           "x" + f"{'' if degree == 1 else '^' + str(degree)}"
+                else:
+                    res += " + " + f"{'' if abs(coeff) == 1 else abs(coeff)}" + \
+                           "x" + f"{'' if degree == 1 else '^' + str(degree)}"
+
+            if self.coeffs[-1] == 0:
+                return res
+
+            if self.coeffs[-1] < 0:
+                res += " - " + str(-self.coeffs[-1])
+            else:
+                res += " + " + str(self.coeffs[-1])
+
+            return res
 
 
 def main():
