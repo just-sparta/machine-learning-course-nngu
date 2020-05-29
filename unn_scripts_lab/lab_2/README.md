@@ -45,7 +45,7 @@
 
 ## Strategies
 1. EnumStrategy
-2. DynamicStrategy
+2. DPStrategy
 
 ## Structure
 * [stonks.py](stonks.py) - investor & stock class

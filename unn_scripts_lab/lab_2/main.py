@@ -3,7 +3,7 @@ import os
 import time
 from mem_use_win32 import get_memory_usage
 from stonks import Investor, Stock
-from work import EnumStrategy, DynamicStrategy
+from work import EnumStrategy, DPStrategy
 import sys
 import traceback
 
@@ -77,7 +77,7 @@ class TaskLauncher:
             if algorithm == 'enum':
                 strategy = EnumStrategy()
             elif algorithm == 'dynamic':
-                strategy = DynamicStrategy()
+                strategy = DPStrategy()
 
             time_start = time.time()
 

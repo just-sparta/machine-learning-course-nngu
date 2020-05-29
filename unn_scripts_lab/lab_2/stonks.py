@@ -1,9 +1,16 @@
 class Investor:
     def __init__(self, days, lots, money):
-        self.days = days + 30
-        self.lots = lots
-        self.money = money
+        self.days = int(days + 30)
+        self.lots = int(lots)
+        self.money = int(money)
         self.end_result = None
+
+        self.stocks = []
+
+    def get_stocks(self, stock):
+        if self.money >= stock.get_cost():
+            self.stocks.append(stock)
+            self.money -= stock.get_cost()
 
     def set_result(self, result):
         self.end_result = result
